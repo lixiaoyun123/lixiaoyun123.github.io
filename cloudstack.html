@@ -293,6 +293,10 @@ img {
 <body>
 <h1>Cloudstack数据转移</h1>
 <h2>一、 更改二级存储</h2>
+<p>二级存储有时候用着用着不够用了。。我们希望更换二级存储。此时，添加一个二级存储的效果不确定。似乎镜像模板不会往新增的二级存储里存放。 可能是本来的二级存储还没用完的原因？  </p>
+<p>管理节点所在地址：172.18.197.1<br />
+原二级存储所在地址：172.18.197.1<br />
+新二级存储所在地址：172.18.197.2</p>
 <p>更改二级存储之前，需要强调：每个二级存储都需要安装系统VM。  </p>
 <p>首先，在UI界面禁用资源域  </p>
 <p><img src="https://lixiaoyun123.github.io/picture/jinyong.png" />  </p>
@@ -301,7 +305,7 @@ img {
 </code></pre>
 
 <p>接下来，选择地址新建一个二级存储：  </p>
-<p>如果新的地址未安装NFS，需要先进行安装  </p>
+<p>如果新的地址未安装过NFS，需要先进行安装  </p>
 <pre><code># yum install nfs-utils  
 </code></pre>
 
@@ -325,11 +329,11 @@ img {
 <pre><code># mkdir -p /mnt/secondary
 </code></pre>
 
-<p>在您的管理服务器上装载辅助存储。将下面的示例 NFS 服务器名称和 NFS 共享路径替换为您自己的。  </p>
-<pre><code># mount -t nfs nfsservername:/export/secondary2 /mnt/secondary
+<p>在管理服务器上装载辅助存储。将下面的示例 NFS 服务器地址和 NFS 共享路径替换为自己的。  </p>
+<pre><code># mount -t nfs 172.18.197.2:/export/secondary2 /mnt/secondary
 </code></pre>
 
-<p>编辑 /etc/sysconfig/nfs 文件  </p>
+<p>在新的二级存储所在服务器编辑 /etc/sysconfig/nfs 文件  </p>
 <pre><code># vi /etc/sysconfig/nfs
 </code></pre>
 
@@ -369,7 +373,7 @@ STATD_OUTGOING_PORT=2020
 <pre><code># vi /etc/idmapd.conf
 </code></pre>
 
-<p>删除 idmapd.conf 中 Domain 行开头的字符 # 并将文件中的值替换为您自己的域。在下面的示例中，域是 cloud.priv    </p>
+<p>删除 idmapd.conf 中 Domain 行开头的字符 # 并将文件中的值替换为自己的域（在建立cloudstack环境时命名的域）。在下面的示例中，域是 cloud.priv    </p>
 <pre><code>Domain = cloud.priv
 </code></pre>
 
@@ -391,8 +395,8 @@ sql&gt; use cloud;
 sql&gt; select * from image_store;
 </code></pre>
 
-<p>修改url为新的二级存储地址,例如：    </p>
-<pre><code>update image_store set url='nfs://172.18.197.3/export/secondary2' where id = 1;
+<p>查看url列的值，按其书写方式修改url为新的二级存储地址,例如：    </p>
+<pre><code>sql&gt; update image_store set url='nfs://172.18.197.2/export/secondary2' where id = 1;
 </code></pre>
 
 <p>如果使用单独的 NFS 服务器，请执行此步骤。如果将管理服务器用作 NFS 服务器，则不得执行此步骤（即卸载前面挂载的目录）。</p>
@@ -406,8 +410,12 @@ sql&gt; select * from image_store;
 
 <p>启动资源域  </p>
 <p><img src="https://lixiaoyun123.github.io/picture/qidong.png" />  </p>
+<p>查看二级存储，里面的url应该已经变成刚才修改的url了</p>
 <h2>二、 更改主存储</h2>
-<p>在ui上新建主存储，需要确保新的节点已安装nfs，且新的路径需要在/etc/exports配置共享。例如：</p>
+<p>当主存储出现空间不足时，我们也可以更换主存储。<br />
+原有主存储：172.18.197.1<br />
+新的主存储：172.18.197.2
+在UI上新建主存储，需要确保新的节点已安装nfs，且新的路径需要在/etc/exports配置共享。例如：</p>
 <pre><code># vi /etc/exports
 </code></pre>
 
@@ -428,8 +436,13 @@ sql&gt; select * from image_store;
 <p>相关卷在第二个主存储上</p>
 <p><img src="https://lixiaoyun123.github.io/picture/juan.png" /></p>
 <h2>三、 转移管理节点</h2>
-<p>现有一个管理节点，一个计算节点，需将管理节点转移至新的服务器上。</p>
-<p>首先，确定如果新的管理节点和数据库不在同一个主机，需要设置数据库配置文件</p>
+<p>当原有的管理节点出现问题，我们需要更换管理节点  </p>
+<p>现有一个管理节点，一个计算节点，需将管理节点转移至新的服务器上。<br />
+管理节点：172.18.197.1<br />
+数据库：172.18.197.1<br />
+计算节点：172.18.197.2<br />
+新的管理节点：172.18.197.5</p>
+<p>首先，确定如果新的管理节点和数据库不在同一个主机，需要在数据库所在服务器设置数据库配置文件</p>
 <pre><code># vi /etv/my.cnf
 </code></pre>
 
@@ -437,17 +450,18 @@ sql&gt; select * from image_store;
 <pre><code>[mysqld]
 innodb_rollback_on_timeout=1
 innodb_lock_wait_timeout=600
-max_connections=1050
+max_connections=700
 log-bin=mysql-bin
 binlog-format = 'ROW'
 bind-address = 0.0.0.0
 </code></pre>
 
 <p>和之前的相比多了一行 bind-address = 0.0.0.0。因为数据库要允许其它主机连接。max_connections值为350*管理节点的个数。</p>
+<p>关闭cloudstack-management服务模拟管理节点意外损坏</p>
 <pre><code># systemctl stop cloudstack-management
 </code></pre>
 
-<p>创建新的管理节点进行基本配置。</p>
+<p>创建新的管理节点进行基本配置</p>
 <p>安装管理程序</p>
 <pre><code># yum -y install cloudstack-management
 </code></pre>
@@ -459,12 +473,13 @@ bind-address = 0.0.0.0
 
 <p>使用新管理节点IP访问WEBUI修改全局变量 host 为新节点ip</p>
 <p><img src="https://lixiaoyun123.github.io/picture/upHost.png" /></p>
-<p>由于host 并非原管理节点修改，计算节点主机配置配置文件需要手动修改</p>
+<p>由于host 并非原管理节点修改，计算节点主机配置文件需要手动修改</p>
 <pre><code># vi /etc/cloudstack/agent/agent.properties
 </code></pre>
 
 <p>将 host 修改为新管理节点IP</p>
-<p>重启cloudstack-agent  </p>
+<p><img src="https://lixiaoyun123.github.io/picture/upHost2.png" />
+重启cloudstack-agent  </p>
 <pre><code># systemctl restart cloudstack-management
 </code></pre>
 
@@ -474,13 +489,16 @@ bind-address = 0.0.0.0
 <p><img src="https://lixiaoyun123.github.io/picture/new2.png" /></p>
 <p>等待系统VM生成，状态变为running 和 up 管理节点即可正常使用</p>
 <h2>四、 数据库节点转移</h2>
-<p>数据库意外失效，且有备份数据时，更换cloudstack使用的数据库</p>
+<p>CloudStack 即使设置了多个管理节点，也只是和一个数据库建立了连接，当这个数据库意外发生故障。CloudStack与数据库的连接断开，管理节点就会失效。<br />
+为此准备一些数据库常用的措施，比如定期备份数据库、设置主从备份之类的。但这些备份的设置与cloudstack没有什么关系，是数据库本身备份设置问题，如何备份不做详述。</p>
 <p>cloudstack与数据库建立连接使用的是 cloud 用户，操作的两个库是cloud和cloud_usage。</p>
+<p>原有数据库节点：172.18.197.1<br />
+新的数据库节点：172.18.197.5  </p>
 <p>首先 停止 cloudstack-management</p>
 <pre><code># systemctl stop cloudstack-management
 </code></pre>
 
-<p>备份一份数据出来，包括 cloud cloud_usage两个库的所有内容</p>
+<p>备份一份数据出来，包括 cloud cloud_usage两个库的所有内容，下面的操作会在/root/下生成一个名叫cloud的sql文件</p>
 <pre><code># mysqldump -u root -p --databases cloud cloud_usage &gt; cloud.sql
 </code></pre>
 
@@ -501,7 +519,8 @@ binlog-format = 'ROW'
 bind-address = 0.0.0.0
 </code></pre>
 
-<p>重启数据库</p>
+<p>注意：max_connections的值为350*管理节点的个数<br />
+重启数据库</p>
 <pre><code># service mysqld restart
 </code></pre>
 
@@ -530,6 +549,9 @@ exit
 # cloudstack-setup-management
 </code></pre>
 
+<p>完成之后，可查看/etc/cloudstack/management/db.properties：</p>
+<p><img src="https://lixiaoyun123.github.io/picture/checkHost.png" />  </p>
+<p>地址已变成新的数据库地址。</p>
 
 </body>
 </html>
