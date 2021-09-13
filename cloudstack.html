@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>新文档</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+</head>
+<body>
+<h1>Cloudstack数据转移</h1>
+<h2>一、 更改二级存储</h2>
+<p>更改二级存储之前，需要强调：每个二级存储都需要安装系统VM。  </p>
+<p>首先，在UI界面禁用资源域  </p>
+<p><img src="https://lixiaoyun123.github.io/picture/jinyong.png" />  </p>
+<p>然后，管理节点停止cloudstack-management服务  </p>
+<pre><code># systemctl stop cloudstack-management
+</code></pre>
+
+<p>接下来，选择地址新建一个二级存储：  </p>
+<p>如果新的地址未安装NFS，需要先进行安装  </p>
+<pre><code># yum install nfs-utils  
+</code></pre>
+
+<p>在存储服务器上，为二级存储创建 NFS 共享，例如：  </p>
+<pre><code># mkdir -p /export/secondary2  
+</code></pre>
+
+<p>要将新目录配置为 NFS 导出，请编辑 /etc/exports。使用 rw、async、no<em>root</em>squash、no<em>subtree</em>check 导出 NFS 共享。例如：  </p>
+<pre><code># vi /etc/exports  
+</code></pre>
+
+<p>插入以下行（对应上面新建的文件路径）：  </p>
+<pre><code>/export *(rw,async,no_root_squash,no_subtree_check)  
+</code></pre>
+
+<p>导出 /export 目录  </p>
+<pre><code># exportfs -a
+</code></pre>
+
+<p>如果二级存储与管理节点不在同一服务器上，则需要在管理服务器上，为二级存储创建一个挂载点。例如：  </p>
+<pre><code># mkdir -p /mnt/secondary
+</code></pre>
+
+<p>在您的管理服务器上装载辅助存储。将下面的示例 NFS 服务器名称和 NFS 共享路径替换为您自己的。  </p>
+<pre><code># mount -t nfs nfsservername:/export/secondary2 /mnt/secondary
+</code></pre>
+
+<p>编辑 /etc/sysconfig/nfs 文件  </p>
+<pre><code># vi /etc/sysconfig/nfs
+</code></pre>
+
+<p>取消注释以下几行（或直接添加在尾部）：  </p>
+<pre><code>LOCKD_TCPPORT=32803
+LOCKD_UDPPORT=32769
+MOUNTD_PORT=892
+RQUOTAD_PORT=875
+STATD_PORT=662
+STATD_OUTGOING_PORT=2020
+</code></pre>
+
+<p>编辑 /etc/sysconfig/iptables 文件。</p>
+<pre><code># vi /etc/sysconfig/iptables
+</code></pre>
+
+<p>在 INPUT 链的开头添加以下几行，其中 <NETWORK> 是您将使用的网络：  </p>
+<pre><code>-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p udp --dport 111 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p tcp --dport 111 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p tcp --dport 2049 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p tcp --dport 32803 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p udp --dport 32769 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p tcp --dport 892 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p udp --dport 892 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p tcp --dport 875 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p udp --dport 875 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p tcp --dport 662 -j ACCEPT
+-A INPUT -s &lt;NETWORK&gt; -m state --state NEW -p udp --dport 662 -j ACCEPT
+</code></pre>
+
+<p>运行以下命令：  </p>
+<pre><code># service iptables restart
+# service iptables save
+</code></pre>
+
+<p>如果客户端和服务器之间使用 NFS v4 通信，请将您的域添加到管理程序主机和管理服务器上的 /etc/idmapd.conf  </p>
+<pre><code># vi /etc/idmapd.conf
+</code></pre>
+
+<p>删除 idmapd.conf 中 Domain 行开头的字符 # 并将文件中的值替换为您自己的域。在下面的示例中，域是 cloud.priv    </p>
+<pre><code>Domain = cloud.priv
+</code></pre>
+
+<p>确保 NFS 和 rpcbind 正在运行  </p>
+<pre><code># service rpcbind start
+# service nfs start
+# chkconfig nfs on
+# chkconfig rpcbind on
+</code></pre>
+
+<p>将原二级存储内所有内容复制到新的二级存储中。。。尽量这么做，不然模板ISO，什么的全没了。  </p>
+<pre><code># cp -r /export/secondary/* /export/secondary2/
+</code></pre>
+
+<p>修改数据库，主要是cloud库的image_store表</p>
+<pre><code># mysql -u root -p
+
+sql&gt; use cloud;
+sql&gt; select * from image_store;
+</code></pre>
+
+<p>修改url为新的二级存储地址,例如：    </p>
+<pre><code>update image_store set url='nfs://172.18.197.3/export/secondary2' where id = 1;
+</code></pre>
+
+<p>如果使用单独的 NFS 服务器，请执行此步骤。如果将管理服务器用作 NFS 服务器，则不得执行此步骤（即卸载前面挂载的目录）。</p>
+<pre><code># umount /mnt/secondary
+# rmdir /mnt/secondary
+</code></pre>
+
+<p>重启cloudstack-management  </p>
+<pre><code># systemctl restart cloudstack-management
+</code></pre>
+
+<p>启动资源域  </p>
+<p><img src="https://lixiaoyun123.github.io/picture/qidong.png" />  </p>
+<h2>二、 更改主存储</h2>
+<p>在ui上新建主存储，需要确保新的节点已安装nfs，且新的路径需要在/etc/exports配置共享。例如：</p>
+<pre><code># vi /etc/exports
+</code></pre>
+
+<p>添加（/data为新的主存储所在路径）：</p>
+<pre><code>/data *(rw,async,no_root_squash,no_subtree_check)
+</code></pre>
+
+<p>正常添加一个新的主存储</p>
+<p><img src="https://lixiaoyun123.github.io/picture/addprimary.png" /></p>
+<p>然后将原主存储启用维护模式。时间较长，耐心等待。这个过程会停掉所有使用该存储的虚拟机</p>
+<p><img src="https://lixiaoyun123.github.io/picture/stopprimary.png" /></p>
+<p>也有比较麻烦的一步，需要一个一个将实例存储迁移到新增的上面</p>
+<p><img src="https://lixiaoyun123.github.io/picture/change.png" /></p>
+<p>全部迁移完毕。。。然后就可以删除该主存储了。。可以强制删除。不用担心虚拟机无法启动，再次启动虚拟机时，它会在新的主存储启动。</p>
+<p><img src="https://lixiaoyun123.github.io/picture/del.png" /></p>
+<p>可以启动虚拟机</p>
+<p><img src="https://lixiaoyun123.github.io/picture/startVM.png" /></p>
+<p>相关卷在第二个主存储上</p>
+<p><img src="https://lixiaoyun123.github.io/picture/juan.png" /></p>
+<h2>三、 转移管理节点</h2>
+<p>现有一个管理节点，一个计算节点，需将管理节点转移至新的服务器上。</p>
+<p>首先，确定如果新的管理节点和数据库不在同一个主机，需要设置数据库配置文件</p>
+<pre><code># vi /etv/my.cnf
+</code></pre>
+
+<p>[mysqld]修改为以下内容：</p>
+<pre><code>[mysqld]
+innodb_rollback_on_timeout=1
+innodb_lock_wait_timeout=600
+max_connections=1050
+log-bin=mysql-bin
+binlog-format = 'ROW'
+bind-address = 0.0.0.0
+</code></pre>
+
+<p>和之前的相比多了一行 bind-address = 0.0.0.0。因为数据库要允许其它主机连接。max_connections值为350*管理节点的个数。</p>
+<pre><code># systemctl stop cloudstack-management
+</code></pre>
+
+<p>创建新的管理节点进行基本配置。</p>
+<p>安装管理程序</p>
+<pre><code># yum -y install cloudstack-management
+</code></pre>
+
+<p>连接数据库初始化管理程序</p>
+<pre><code># cloudstack-setup-databases cloud:password@172.18.197.1
+# cloudstack-setup-management
+</code></pre>
+
+<p>使用新管理节点IP访问WEBUI修改全局变量 host 为新节点ip</p>
+<p><img src="https://lixiaoyun123.github.io/picture/upHost.png" /></p>
+<p>由于host 并非原管理节点修改，计算节点主机配置配置文件需要手动修改</p>
+<pre><code># vi /etc/cloudstack/agent/agent.properties
+</code></pre>
+
+<p>将 host 修改为新管理节点IP</p>
+<p>重启cloudstack-agent  </p>
+<pre><code># systemctl restart cloudstack-management
+</code></pre>
+
+<p>新的管理节点不能与原系统VM通信，需要删除掉原有系统VM。会自动生成新的VM。</p>
+<p><img src="https://lixiaoyun123.github.io/picture/del2.png" /></p>
+<p>等一段时间，便可看到新的系统VM</p>
+<p><img src="https://lixiaoyun123.github.io/picture/new2.png" /></p>
+<p>等待系统VM生成，状态变为running 和 up 管理节点即可正常使用</p>
+<h2>四、 数据库节点转移</h2>
+<p>数据库意外失效，且有备份数据时，更换cloudstack使用的数据库</p>
+<p>cloudstack与数据库建立连接使用的是 cloud 用户，操作的两个库是cloud和cloud_usage。</p>
+<p>首先 停止 cloudstack-management</p>
+<pre><code># systemctl stop cloudstack-management
+</code></pre>
+
+<p>备份一份数据出来，包括 cloud cloud_usage两个库的所有内容</p>
+<pre><code># mysqldump -u root -p --databases cloud cloud_usage &gt; cloud.sql
+</code></pre>
+
+<p>备份完毕，关闭数据库，假装数据库意外损坏</p>
+<pre><code># systemctl stop mariadb
+</code></pre>
+
+<p>新数据库节点操作：编辑数据库配置文件</p>
+<pre><code># vi /etc/my.cnf
+</code></pre>
+
+<p>修改：</p>
+<pre><code>innodb_rollback_on_timeout=1
+innodb_lock_wait_timeout=600
+max_connections=700
+log-bin=mysql-bin
+binlog-format = 'ROW'
+bind-address = 0.0.0.0
+</code></pre>
+
+<p>重启数据库</p>
+<pre><code># service mysqld restart
+</code></pre>
+
+<p>进入数据库控制台</p>
+<pre><code># mysql -u root -p
+</code></pre>
+
+<p>创建cloud用户并 赋予 权限</p>
+<pre><code>grant process on *.* to 'cloud'@'localhost' identified by 'password';
+grant all privileges on *.* to 'cloud'@'localhost';
+grant process on *.* to 'cloud'@'%' identified by 'password';
+grant all privileges on *.* to 'cloud'@'%';
+</code></pre>
+
+<p>刷新权限 退出控制台</p>
+<pre><code>flush privileges;
+exit
+</code></pre>
+
+<p>将之前备份的sql文件复制到本节点(/root/下)，将其中数据备份到本节点数据库  </p>
+<pre><code>mysql -u root -p &lt; cloud.sql
+</code></pre>
+
+<p>现在数据已经转移到新的数据节点了，重点是 管理节点设置与新数据库管理节点建立连接  </p>
+<pre><code># cloudstack-setup-databases cloud:password@172.18.197.5
+# cloudstack-setup-management
+</code></pre>
+
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->
