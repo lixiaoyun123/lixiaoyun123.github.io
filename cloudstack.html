@@ -291,13 +291,12 @@ img {
 </style>
 </head>
 <body>
-<h1>Cloudstack数据转移</h1>
+<h1>Cloudstack数据迁移</h1>
 <h2>一、 更改二级存储</h2>
 <p>二级存储有时候用着用着不够用了。。我们希望更换二级存储。此时，添加一个二级存储的效果不确定。似乎镜像模板不会往新增的二级存储里存放。 可能是本来的二级存储还没用完的原因？  </p>
 <p>管理节点所在地址：172.18.197.1<br />
 原二级存储所在地址：172.18.197.1<br />
 新二级存储所在地址：172.18.197.2</p>
-<p>更改二级存储之前，需要强调：每个二级存储都需要安装系统VM。  </p>
 <p>首先，在UI界面禁用资源域  </p>
 <p><img src="https://lixiaoyun123.github.io/picture/jinyong.png" />  </p>
 <p>然后，管理节点停止cloudstack-management服务  </p>
@@ -310,7 +309,7 @@ img {
 </code></pre>
 
 <p>在存储服务器上，为二级存储创建 NFS 共享，例如：  </p>
-<pre><code># mkdir -p /export/secondary2  
+<pre><code># mkdir -p /data/secondary2  
 </code></pre>
 
 <p>要将新目录配置为 NFS 导出，请编辑 /etc/exports。使用 rw、async、no<em>root</em>squash、no<em>subtree</em>check 导出 NFS 共享。例如：  </p>
@@ -318,19 +317,11 @@ img {
 </code></pre>
 
 <p>插入以下行（对应上面新建的文件路径）：  </p>
-<pre><code>/export *(rw,async,no_root_squash,no_subtree_check)  
+<pre><code>/data *(rw,async,no_root_squash,no_subtree_check)  
 </code></pre>
 
-<p>导出 /export 目录  </p>
+<p>导出 /data 目录  </p>
 <pre><code># exportfs -a
-</code></pre>
-
-<p>如果二级存储与管理节点不在同一服务器上，则需要在管理服务器上，为二级存储创建一个挂载点。例如：  </p>
-<pre><code># mkdir -p /mnt/secondary
-</code></pre>
-
-<p>在管理服务器上装载辅助存储。将下面的示例 NFS 服务器地址和 NFS 共享路径替换为自己的。  </p>
-<pre><code># mount -t nfs 172.18.197.2:/export/secondary2 /mnt/secondary
 </code></pre>
 
 <p>在新的二级存储所在服务器编辑 /etc/sysconfig/nfs 文件  </p>
@@ -384,8 +375,8 @@ STATD_OUTGOING_PORT=2020
 # chkconfig rpcbind on
 </code></pre>
 
-<p>将原二级存储内所有内容复制到新的二级存储中。。。尽量这么做，不然模板ISO，什么的全没了。  </p>
-<pre><code># cp -r /export/secondary/* /export/secondary2/
+<p>将原二级存储内所有内容复制到新的二级存储中。。。尽量这么做，不然模板ISO，什么的全没了。复制过程需要输入新的二级存储所在服务器的登录密码。  </p>
+<pre><code># scp -r /export/secondary/* root@172.18.197.2:/data/secondary2/
 </code></pre>
 
 <p>修改数据库，主要是cloud库的image_store表</p>
@@ -396,12 +387,7 @@ sql&gt; select * from image_store;
 </code></pre>
 
 <p>查看url列的值，按其书写方式修改url为新的二级存储地址,例如：    </p>
-<pre><code>sql&gt; update image_store set url='nfs://172.18.197.2/export/secondary2' where id = 1;
-</code></pre>
-
-<p>如果使用单独的 NFS 服务器，请执行此步骤。如果将管理服务器用作 NFS 服务器，则不得执行此步骤（即卸载前面挂载的目录）。</p>
-<pre><code># umount /mnt/secondary
-# rmdir /mnt/secondary
+<pre><code>sql&gt; update image_store set url='nfs://172.18.197.2/data/secondary2' where id = 1;
 </code></pre>
 
 <p>重启cloudstack-management  </p>
@@ -414,8 +400,8 @@ sql&gt; select * from image_store;
 <h2>二、 更改主存储</h2>
 <p>当主存储出现空间不足时，我们也可以更换主存储。<br />
 原有主存储：172.18.197.1<br />
-新的主存储：172.18.197.2
-在UI上新建主存储，需要确保新的节点已安装nfs，且新的路径需要在/etc/exports配置共享。例如：</p>
+新的主存储：172.18.197.2  </p>
+<p>在UI上新建主存储，需要确保新的节点已安装nfs，且新的路径需要在/etc/exports配置共享。例如：</p>
 <pre><code># vi /etc/exports
 </code></pre>
 
@@ -435,7 +421,7 @@ sql&gt; select * from image_store;
 <p><img src="https://lixiaoyun123.github.io/picture/startVM.png" /></p>
 <p>相关卷在第二个主存储上</p>
 <p><img src="https://lixiaoyun123.github.io/picture/juan.png" /></p>
-<h2>三、 转移管理节点</h2>
+<h2>三、 管理节点迁移</h2>
 <p>当原有的管理节点出现问题，我们需要更换管理节点  </p>
 <p>现有一个管理节点，一个计算节点，需将管理节点转移至新的服务器上。<br />
 管理节点：172.18.197.1<br />
@@ -488,12 +474,12 @@ bind-address = 0.0.0.0
 <p>等一段时间，便可看到新的系统VM</p>
 <p><img src="https://lixiaoyun123.github.io/picture/new2.png" /></p>
 <p>等待系统VM生成，状态变为running 和 up 管理节点即可正常使用</p>
-<h2>四、 数据库节点转移</h2>
+<h2>四、 数据库节点迁移</h2>
 <p>CloudStack 即使设置了多个管理节点，也只是和一个数据库建立了连接，当这个数据库意外发生故障。CloudStack与数据库的连接断开，管理节点就会失效。<br />
 为此准备一些数据库常用的措施，比如定期备份数据库、设置主从备份之类的。但这些备份的设置与cloudstack没有什么关系，是数据库本身备份设置问题，如何备份不做详述。</p>
 <p>cloudstack与数据库建立连接使用的是 cloud 用户，操作的两个库是cloud和cloud_usage。</p>
-<p>原有数据库节点：172.18.197.1<br />
-新的数据库节点：172.18.197.5  </p>
+<p>原有数据库节点：172.18.197.5<br />
+新的数据库节点：172.18.197.1  </p>
 <p>首先 停止 cloudstack-management</p>
 <pre><code># systemctl stop cloudstack-management
 </code></pre>
@@ -545,7 +531,7 @@ exit
 </code></pre>
 
 <p>现在数据已经转移到新的数据节点了，重点是 管理节点设置与新数据库管理节点建立连接  </p>
-<pre><code># cloudstack-setup-databases cloud:password@172.18.197.5
+<pre><code># cloudstack-setup-databases cloud:password@172.18.197.1
 # cloudstack-setup-management
 </code></pre>
 
