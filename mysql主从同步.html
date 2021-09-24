@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>mysql主从同步</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+/* GitHub stylesheet for MarkdownPad (http://markdownpad.com) */
+/* Author: Nicolas Hery - http://nicolashery.com */
+/* Version: b13fe65ca28d2e568c6ed5d7f06581183df8f2ff */
+/* Source: https://github.com/nicolahery/markdownpad-github */
+
+/* RESET
+=============================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* BODY
+=============================================================================*/
+
+body {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+body>*:first-child {
+  margin-top: 0 !important;
+}
+
+body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* BLOCKS
+=============================================================================*/
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin: 15px 0;
+}
+
+/* HEADERS
+=============================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 tt, h1 code, h2 tt, h2 code, h3 tt, h3 code, h4 tt, h4 code, h5 tt, h5 code, h6 tt, h6 code {
+  font-size: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  color: #000;
+}
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #ccc;
+  color: #000;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+}
+
+body>h2:first-child, body>h1:first-child, body>h1:first-child+h2, body>h3:first-child, body>h4:first-child, body>h5:first-child, body>h6:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
+  margin-top: 10px;
+}
+
+/* LINKS
+=============================================================================*/
+
+a {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* LISTS
+=============================================================================*/
+
+ul, ol {
+  padding-left: 30px;
+}
+
+ul li > :first-child, 
+ol li > :first-child, 
+ul li ul:first-of-type, 
+ol li ol:first-of-type, 
+ul li ol:first-of-type, 
+ol li ul:first-of-type {
+  margin-top: 0px;
+}
+
+ul ul, ul ol, ol ol, ol ul {
+  margin-bottom: 0;
+}
+
+dl {
+  padding: 0;
+}
+
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+
+dl dt:first-child {
+  padding: 0;
+}
+
+dl dt>:first-child {
+  margin-top: 0px;
+}
+
+dl dt>:last-child {
+  margin-bottom: 0px;
+}
+
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+
+dl dd>:first-child {
+  margin-top: 0px;
+}
+
+dl dd>:last-child {
+  margin-bottom: 0px;
+}
+
+/* CODE
+=============================================================================*/
+
+pre, code, tt {
+  font-size: 12px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+code, tt {
+  margin: 0 0px;
+  padding: 0px 0px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+pre>code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent;
+}
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+pre code, pre tt {
+  background-color: transparent;
+  border: none;
+}
+
+kbd {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #DDDDDD;
+    background-image: linear-gradient(#F1F1F1, #DDDDDD);
+    background-repeat: repeat-x;
+    border-color: #DDDDDD #CCCCCC #CCCCCC #DDDDDD;
+    border-image: none;
+    border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 10px;
+    padding: 1px 4px;
+}
+
+/* QUOTES
+=============================================================================*/
+
+blockquote {
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+
+blockquote>:first-child {
+  margin-top: 0px;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0px;
+}
+
+/* HORIZONTAL RULES
+=============================================================================*/
+
+hr {
+  clear: both;
+  margin: 15px 0;
+  height: 0px;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid #ddd;
+  padding: 0;
+}
+
+/* TABLES
+=============================================================================*/
+
+table th {
+  font-weight: bold;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 6px 13px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+/* IMAGES
+=============================================================================*/
+
+img {
+  max-width: 100%
+}
+</style>
+</head>
+<body>
+<h1>Centos7下MySQL5.7主从同步配置</h1>
+<p>当我们处于对安全的考虑，需要对MySQL数据库进行数据备份时，主从同步提供了一种不错的方式，采取这种方式数据可以从一个MySQL数据库服务器主节点复制到一个从节点。MySQL 默认采用异步复制方式，这样从节点不用一直访问主服务器来更新自己的数据，数据的更新可以在远程连接上进行，从节点可以复制主数据库中的所有数据库或者特定的数据库，或者特定的表。下面我们进行配置。  </p>
+<p>注意：<br />
+1.需确保主、从数据库的版本一致，如版本不一致，则确保从数据库的版本高于主数据库。<br />
+2.本次配置为两个主库一个从库，需要至少从库为MySQL5.7版本，否则可能无法配置成功。  </p>
+<p>主库1：172.18.193.1 MySQL5.6.43-log<br />
+主库2：172.18.194.218 MySQL5.7.28<br />
+从库：172.18.3.10 MySQL5.7.31  </p>
+<h2>一、备份数据</h2>
+<p>开始配置之前，先进行数据备份，这里使用navicat导出相应sql文件</p>
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/navicat.png" />
+<img src="https://lixiaoyun123.github.io/pic_mysql/sql.png" /></p>
+<p>将导出的sql文件复制到从库172.18.3.10 /root/下备用</p>
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/sql2.png" /></p>
+<h2>二、配置主库</h2>
+<p>首先，登入172.18.193.1，修改/etc/my.cnf，在[mysqld]中添加：</p>
+<pre><code>server-id = 1
+log_bin = mysql-bin
+log_bin_index = mysql-bin.index
+binlog_do_db = cloud
+binlog_do_db = cloud_usage
+</code></pre>
+
+<p>其中server-id为主从同步的唯一标识，不可与其它库的相同，本次采用ip地址最后一位。log_bin启动mysql二进制日志，binlog_do_db表示需要同步的库，存在多个时可重复输入。另外binlog_ignore_db用于指定不进行同步的数据库，也可重复输入，一般不与binlog_do_db同时使用。当不指定库时，默认同步所有库。  </p>
+<p>登入MySQL数据库，创建同步账号,账号名：mysqlbackup  </p>
+<pre><code>mysql&gt; grant replication slave on *.* to 'mysqlbackup'@'172.18.3.10' identified by 'Jufeng147532';
+</code></pre>
+
+<p>重启MySQL服务</p>
+<pre><code># systemctl restart mysqld.server
+</code></pre>
+
+<p>登录MySQL数据库，查看主服务器状态</p>
+<pre><code>mysql&gt; show master status;
+</code></pre>
+
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/masterstatus.png" /></p>
+<p>另一个主库操作相同，登入172.18.194.218，修改/etc/my.cnf，在[mysqld]中添加：</p>
+<pre><code>server-id = 218
+log_bin = mysql-bin
+log_bin_index = mysql-bin.index
+binlog_do_db = synergy
+</code></pre>
+
+<p>此处server-id同样采用ip地址最后一位，log_bin设置与之前相同</p>
+<p>登入数据库，创建同步账号</p>
+<pre><code>mysql&gt; grant replication slave on *.* to 'mysqlbackup'@'172.18.3.10' identified by 'Jufeng147532';
+</code></pre>
+
+<p>重启MySQL服务</p>
+<pre><code># systemctl restart mysqld.server
+</code></pre>
+
+<p>登录MySQL数据库，查看主服务器状态</p>
+<pre><code>mysql&gt; show master status;
+</code></pre>
+
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/restart.png" /></p>
+<h2>三、配置从库</h2>
+<p>登入172.18.3.10，修改my.cnf，在[mysqld]中添加：</p>
+<pre><code>server-id = 10
+relay-log = slave-relay-bin
+relay-log-index = slave-relay-bin.index
+master_info_repository=TABLE
+relay_log_info_repository=TABLE
+</code></pre>
+
+<p>其中，后两行是指修改MySQL存储master-info和relay-info的方式，即从文件存储改为表存储</p>
+<p>重启MySQL服务</p>
+<pre><code># systemctl restart mysqld.server
+</code></pre>
+
+<p>登录从库，按需要新建数据库：</p>
+<pre><code>mysql&gt; create database if not exists cloud;
+mysql&gt; create database if not exists cloud_usage;
+mysql&gt; create database if not exists synergy;
+......
+</code></pre>
+
+<p>为保证从库也可直接使用，可将未进行同步的库导入进来</p>
+<p>授予root用户权限</p>
+<pre><code>mysql&gt; grant all privileges on *.* to 'root'@'%' identified by 'Jufeng147532';
+mysql&gt; flush privileges;
+</code></pre>
+
+<p>导入数据,注意选择数据库，以免导入位置错误</p>
+<pre><code>mysql&gt; use cloud；
+mysql&gt; source /root/cloud.sql;
+mysql&gt; use cloud_usage;
+mysql&gt; source /root/cloud.sql;
+......
+</code></pre>
+
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/sourceend.png" /></p>
+<p>导入完成后，进行同步操作,分别change master到两台主库服务器，后面以FOR CHANNEL 'CHANNEL_NAME'区分：</p>
+<pre><code>mysql&gt; CHANGE MASTER TO MASTER_HOST='172.18.193.1',MASTER_USER='mysqlbackup', MASTER_PASSWORD='Jufeng147532',MASTER_LOG_FILE='mysql-bin.000069',MASTER_LOG_POS=38186524 FOR CHANNEL 'Master_1';
+mysql&gt; CHANGE MASTER TO MASTER_HOST='172.18.194.218',MASTER_USER='mysqlbackup', MASTER_PASSWORD='Jufeng147532',MASTER_LOG_FILE='mysql-bin.000001',MASTER_LOG_POS=154 FOR CHANNEL 'Master_2';
+</code></pre>
+
+<p>此处参数对应前面主库配置</p>
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/setmaster.png" /></p>
+<p>启动slave，可以通过start slave的方式去启动所有的复制，也可以通过启动单个复制源的方式，下面进行单个复制源的启动进行演示(停止也是一样)：</p>
+<pre><code>mysql&gt; start slave；
+mysql&gt; start slave for CHANNEL 'Master_1';
+mysql&gt; start slave for CHANNEL 'Master_2';
+</code></pre>
+
+<p>正常启动后，可以查看同步的状态,执行以下命令查看所有复制源或单个复制源的同步状态</p>
+<pre><code>mysql&gt; SHOW SLAVE STATUS\G;
+or
+mysql&gt; SHOW SLAVE STATUS FOR CHANNEL 'Master_1'\G；
+</code></pre>
+
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/slavestatus.png" /></p>
+<p>当Slave<em>IO</em>Running和Slave_SQL_Running都为yes时，配置成功</p>
+<p>也可以通过查看performance_schema相关的表查看同步状态，执行以下命令监控复制状态。</p>
+<pre><code>mysql&gt; SELECT * FROM performance_schema.replication_connection_status;
+</code></pre>
+
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/masterinfo.png" /></p>
+<h2>四、验证数据是否同步</h2>
+<p>先查看要修改的数据</p>
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/test0.png" /></p>
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/test1.png" /></p>
+<p>在主库1修改一条数据：</p>
+<pre><code>mysql&gt; use cloud;
+mysql&gt; update user set lastname='cloudy' where id = 1;
+</code></pre>
+
+<p>在主库2修改一条数据：</p>
+<pre><code>mysql&gt; use synergy;
+mysql&gt; update syn_synergy_standard set sequence=3 where id = '2c92421e79c5962d0179c69185d30007';
+</code></pre>
+
+<p>回到从库查看数据是否同步过来了</p>
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/upmaster1.png" /></p>
+<p><img src="https://lixiaoyun123.github.io/pic_mysql/test2.png" /></p>
+<p>至此同步配置成功</p>
+<p>注意：由于在配置过程中，主数据库可能已经发生更改，导致sql文件的内容并非最新的内容，所以在配置完成后最好再手动导入最新的数据，以免同步出现问题。</p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->
